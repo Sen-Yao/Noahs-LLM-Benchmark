@@ -1,0 +1,9 @@
+test.sh
+
+__pycache__/
+*.pyc
+
+.venv/
+venv/
+
+.env
