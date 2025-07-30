@@ -46,6 +46,7 @@ class OpenAIAdapter(BaseModelAdapter):
                     }
                 ],
                 model=self.model_id,
+                seed=42,  # 设置随机种子以确保结果可复现
             )
             return chat_completion.choices[0].message.content
         except Exception as e:
@@ -76,7 +77,8 @@ class OllamaAdapter(BaseModelAdapter):
                     "content": prompt,
                 }
             ],
-            "stream": False
+            "stream": False,
+            "seed": 42,  # 设置随机种子以确保结果可复现
         }
 
         try:

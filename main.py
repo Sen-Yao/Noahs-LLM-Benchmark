@@ -17,6 +17,8 @@ def main():
     parser.add_argument("--eval_api_base", type=str, default="https://api.openai.com/v1", help="The base URL for the LLM Judger API (for local models).")
     parser.add_argument("--eval_api_key", type=str, default="sk-your-key-here", help="API Key for the LLM Judger service.")
     parser.add_argument("--eval_model_id", type=str, default="gpt-4o", help="Model for the LLM Judger service.")
+
+    parser.add_argument("--task", type=int, default="0", help="Test on specific task, default is 0 (all tasks).")
     
     args = parser.parse_args()
     if args.adapter_type == "openai" and (args.api_key == "sk-your-key-here" or args.eval_api_key == "sk-your-key-here"):
@@ -49,7 +51,7 @@ def main():
     )
     # 初始化 Benchmark Runner
     # 它会自动加载我们定义在 tasks/__init__.py 中的所有任务
-    runner = BenchmarkRunner(model_adapter, ALL_TASKS, judger)
+    runner = BenchmarkRunner(model_adapter, ALL_TASKS, judger, args.task)
 
     # 运行并获取结果
     final_report = runner.run()

@@ -7,11 +7,12 @@ from typing import List
 from evaluate import LLMJudger
 
 class BenchmarkRunner:
-    def __init__(self, model_adapter: BaseModelAdapter, tasks: List[BenchmarkTask], judger: LLMJudger):
+    def __init__(self, model_adapter: BaseModelAdapter, tasks: List[BenchmarkTask], judger: LLMJudger, task_index: int = 0):
         self.model_adapter = model_adapter
         self.tasks = tasks
         self.results = []
         self.judger = judger
+        self.task_index = task_index
 
     def run(self):
         print(f"🚀 Starting benchmark for model: {self.model_adapter.model_id}")
@@ -19,15 +20,12 @@ class BenchmarkRunner:
         
         total_start_time = time.time()
 
-
-
-        for i, task in enumerate(self.tasks):
-            print(f"===== Running Task {i+1}/{len(self.tasks)}: {task.get_name()} =====")
+        if self.task_index != 0:
+            # 如果指定了特定任务，则只运行该任务
+            task = self.tasks[self.task_index - 1]
+            print(f"===== Running Task: {task.get_name()} =====")
             print(f"Description: {task.get_description()}")
-            
             prompt = task.generate_prompt()
-            print(f"Prompt: \n---\n{prompt}\n---\n")
-            
             start_time = time.time()
             response = self.model_adapter.query(prompt)
             end_time = time.time()
@@ -48,6 +46,34 @@ class BenchmarkRunner:
                 "score": score,
                 "reason": reason,
             })
+        else:
+            for i, task in enumerate(self.tasks):
+                print(f"===== Running Task {i+1}/{len(self.tasks)}: {task.get_name()} =====")
+                print(f"Description: {task.get_description()}")
+                
+                prompt = task.generate_prompt()
+                print(f"Prompt: \n---\n{prompt}\n---\n")
+                
+                start_time = time.time()
+                response = self.model_adapter.query(prompt)
+                end_time = time.time()
+                
+                execution_time = round(end_time - start_time, 2)
+                
+                print(f"Model Response (took {execution_time}s): \n---\n{response}\n---\n")
+
+                score, reason = task.evaluate(response, self.judger)
+                print(f"📊 Score: {score}/1.0")
+                print(f"Reason: {reason}\n")
+                
+                self.results.append({
+                    "task_name": task.get_name(),
+                    "execution_time": execution_time,
+                    # "prompt": prompt,
+                    # "response": response,
+                    "score": score,
+                    "reason": reason,
+                })
             
         total_end_time = time.time()
         total_execution_time = round(total_end_time - total_start_time, 2)
