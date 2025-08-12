@@ -16,7 +16,7 @@ class BenchmarkRunner:
 
     def run(self):
         print(f"🚀 Starting benchmark for model: {self.model_adapter.model_id}")
-        print(f"Total tasks to run: {len(self.tasks)}\n")
+        
         
         total_start_time = time.time()
 
@@ -48,6 +48,7 @@ class BenchmarkRunner:
             })
         else:
             for i, task in enumerate(self.tasks):
+                print(f"Total tasks to run: {len(self.tasks)}\n")
                 print(f"===== Running Task {i+1}/{len(self.tasks)}: {task.get_name()} =====")
                 print(f"Description: {task.get_description()}")
                 
@@ -88,6 +89,6 @@ class BenchmarkRunner:
             "model_id": self.model_adapter.model_id,
             "total_tasks": len(self.tasks),
             "average_score": average_score,
-            "detailed_results": self.results
+            # "detailed_results": self.results
         }
         return summary

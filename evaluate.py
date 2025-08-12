@@ -45,8 +45,7 @@ class LLMJudger(OpenAIAdapter):
             reason_match = re.search(r"Reason:\s*(.*)", judge_response, re.DOTALL)
             
             if score_match and reason_match:
-                # 将10分制的分数归一化到0-1分
-                score = float(score_match.group(1)) / 10.0
+                score = float(score_match.group(1)) / 1.0
                 reason = reason_match.group(1).strip()
                 return score, f"Judge's Verdict: {reason}"
             else:

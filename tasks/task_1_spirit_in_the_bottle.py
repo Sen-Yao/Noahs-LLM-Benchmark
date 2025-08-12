@@ -49,13 +49,11 @@ class SpiritInTheBottle(BenchmarkTask):
         response = response.lower()
 
         evaluation_standard = f"""
-        若模型的回答接近于「安德烈的灵魂的另一面」，则评分为 1.0 分。
-        若模型的回答接近于「安德烈」，则评分为 0.5
-        若模型的回答接近于「安德烈的兄弟」，则评分为 0.2
+        若模型的回答接近于「安德烈的灵魂的另一面」，则评分为 1 分。
+        若模型的回答接近于「安德烈」，则评分为 0.5 分。
+        若模型的回答接近于「安德烈的兄弟」，则评分为 0.2 分。
         若模型回答与上述内容无关，则评分为 0.0 分。
         """
-
+        
         score, reason = judger.evaluate(evaluation_standard, response)
-
-        print(f"Response: {response}")
         return round(score, 2), reason
