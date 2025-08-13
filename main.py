@@ -18,7 +18,7 @@ def main():
     parser.add_argument("--eval_api_key", type=str, default="sk-your-key-here", help="API Key for the LLM Judger service.")
     parser.add_argument("--eval_model_id", type=str, default="gpt-4o", help="Model for the LLM Judger service.")
 
-    parser.add_argument("--task", type=int, default="0", help="Test on specific task, default is 0 (all tasks).")
+    parser.add_argument("--task", type=int, default=0, help="Test on specific task, default is 0 (all tasks).")
     
     args = parser.parse_args()
     if args.adapter_type == "openai" and (args.api_key == "sk-your-key-here" or args.eval_api_key == "sk-your-key-here"):

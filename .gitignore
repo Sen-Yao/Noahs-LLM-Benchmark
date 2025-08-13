@@ -1,4 +1,5 @@
 test.sh
+command.sh
 
 __pycache__/
 *.pyc
