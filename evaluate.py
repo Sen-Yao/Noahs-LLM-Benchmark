@@ -35,7 +35,7 @@ class LLMJudger(OpenAIAdapter):
         judge_adapter = OpenAIAdapter(api_key=self.JUDGE_API_KEY, model_id=self.JUDGE_MODEL_ID, api_base=self.JUDGE_API_BASE)
         
         judging_prompt = self._get_judge_prompt(evaluation_standard, response)
-        print("Judger Evaluating...")
+        # print("Judger Evaluating...")
         # 让裁判模型打分
         judge_response = judge_adapter.query(judging_prompt)
         

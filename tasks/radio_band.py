@@ -37,6 +37,6 @@ class RadioBandClassify(BenchmarkTask):
         else:
             score = 0.0
             reason = "完全不相关的回答"
-        print(f"Response: {response}")
+        # print(f"Response: {response}")
 
         return round(score, 2), reason

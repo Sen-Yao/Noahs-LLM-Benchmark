@@ -114,6 +114,6 @@ class TransactionClassify(BenchmarkTask):
         else:
             score = 0.0
             reason = "Incorrect classification: The response does not match the expected category '借贷'."
-        print(f"Response: {response}")
+        # print(f"Response: {response}")
 
         return round(score, 2), reason
