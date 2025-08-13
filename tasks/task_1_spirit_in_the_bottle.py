@@ -33,8 +33,7 @@ class SpiritInTheBottle(BenchmarkTask):
         article_content = self._read_article()
         
         # 使用 f-string 构建 prompt 模板，非常清晰
-        prompt = f"""
-            请阅读下方的一段短篇小说：
+        prompt = f"""请阅读下方的一段短篇小说：
 
             --- ARTICLE BEGINS ---
             {article_content}

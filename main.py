@@ -2,11 +2,13 @@
 import argparse
 import os
 from pprint import pprint
+import datetime
 
 from benchmark_runner import BenchmarkRunner
 from model_adapter import OpenAIAdapter,OllamaAdapter
 from tasks import ALL_TASKS # 从 tasks 包中导入所有任务
 from evaluate import LLMJudger
+from logger import setup_markdown_logger
 
 def main():
     parser = argparse.ArgumentParser(description="Personal LLM Benchmark Framework")
@@ -21,6 +23,13 @@ def main():
     parser.add_argument("--task", type=int, default=0, help="Test on specific task, default is 0 (all tasks).")
     
     args = parser.parse_args()
+    benchmark_logger = setup_markdown_logger()
+    benchmark_logger.info("# Noah's LLM Benchmark 结果\n")
+    benchmark_logger.info(f"- 测评模型: {args.model_id}\n")
+    benchmark_logger.info(f"- 评价模型: {args.eval_model_id}\n")
+    benchmark_logger.info(f"- 运行时间: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+    benchmark_logger.info(f"- 题库版本: 20250813\n")
+
     if args.adapter_type == "openai" and (args.api_key == "sk-your-key-here" or args.eval_api_key == "sk-your-key-here"):
         # 如果没有提供 API Key，则提示错误
         parser.error("--api_key and eval_api_key is required for the selected adapter type")
@@ -51,12 +60,12 @@ def main():
     )
     # 初始化 Benchmark Runner
     # 它会自动加载我们定义在 tasks/__init__.py 中的所有任务
-    runner = BenchmarkRunner(model_adapter, ALL_TASKS, judger, args.task)
+    runner = BenchmarkRunner(model_adapter, ALL_TASKS, judger, args.task, benchmark_logger)
 
     # 运行并获取结果
     final_report = runner.run()
 
-    # 4. 打印最终报告
+    # 打印最终报告
     print("\n\n========== 📊 FINAL BENCHMARK REPORT ==========")
     pprint(final_report)
     print("==============================================")

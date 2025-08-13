@@ -12,8 +12,7 @@ class RadioBandClassify(BenchmarkTask):
     def generate_prompt(self) -> str:
         
         # 使用 f-string 构建 prompt 模板，非常清晰
-        prompt = f"""
-            中国大陆在 VHF 和 UHF 范围内分配给业余业务和卫星业余业务与其他业务共用并设业务类别为主要业务与次要业务，以下那些频率分配给业余业务和卫星业余业务与其他业务共用并且业余业务和卫星业余业务作为主要业务：
+        prompt = f"""中国大陆在 VHF 和 UHF 范围内分配给业余业务和卫星业余业务与其他业务共用并设业务类别为主要业务与次要业务，以下那些频率分配给业余业务和卫星业余业务与其他业务共用并且业余业务和卫星业余业务作为主要业务：
             A: 50MHz、144MHz
             B: 144MHz、430MHz
             C: 220MHz、430MHz

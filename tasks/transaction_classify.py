@@ -17,8 +17,7 @@ class TransactionClassify(BenchmarkTask):
     def generate_prompt(self) -> str:
         
         # 使用 f-string 构建 prompt 模板，非常清晰
-        prompt = f"""
-            请阅读下方的分类要求：
+        prompt = f"""请阅读下方的分类要求：
 
             --- Prompt BEGINS ---
             # 财务数据整理与记账分类
