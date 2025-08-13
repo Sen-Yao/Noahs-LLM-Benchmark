@@ -26,7 +26,7 @@ class LLMJudger(OpenAIAdapter):
 
         请按照下面的格式给出你的评分，除此之外不要包含其他内容。
 
-        Score: [Total score out of 10]
+        Score: [Total score out of 100]
         Reason: [Your brief justification for the score]
         """
 

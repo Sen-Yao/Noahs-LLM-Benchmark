@@ -1,11 +1,15 @@
 # benchmark_runner.py
 import time
 from tqdm import tqdm
+import logging
+
 from model_adapter import BaseModelAdapter
 from tasks.task_0_base_task import BenchmarkTask
 from evaluate import LLMJudger
 from typing import List
 from evaluate import LLMJudger
+
+# logging.basicConfig(level=logging.DEBUG)
 
 class BenchmarkRunner:
     def __init__(self, model_adapter: BaseModelAdapter, tasks: List[BenchmarkTask], judger: LLMJudger, task_index: int = 0):
@@ -64,6 +68,7 @@ class BenchmarkRunner:
                 # print(f"Model Response (took {execution_time}s): \n---\n{response}\n---\n")
 
                 score, reason = task.evaluate(response, self.judger)
+                # logging.debug(f"Task: {task.get_name()}, Score: {score}, Reason: {reason}")
                 # print(f"📊 Score: {score}/1.0")
                 # print(f"Reason: {reason}\n")
                 

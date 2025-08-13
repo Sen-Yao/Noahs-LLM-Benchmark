@@ -106,13 +106,13 @@ class TransactionClassify(BenchmarkTask):
 
         # 正确分类为「借贷」，因为「帮小明买饭」暗示用户先行垫付了小明的饭钱，属于借出款项，此时小明发了一个红包给用户，这是一次还款行为，因此属于借贷
         if response == "借贷":
-            score = 1.0
+            score = 100
             reason = "Correct classification: '借贷' is appropriate because the user paid for 小明's meal and received a WeChat red envelope as repayment."
         elif response == "其他" or response == "收入来源":
-            score = 0.3
+            score = 30
             reason = "Partially correct classification: '其他' or '收入来源' does not accurately reflect the nature of the transaction, which is a repayment for a meal paid by the user."
         else:
-            score = 0.0
+            score = 0
             reason = "Incorrect classification: The response does not match the expected category '借贷'."
         # print(f"Response: {response}")
 
