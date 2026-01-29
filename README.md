@@ -73,9 +73,9 @@
 | `api_base`      | string | `https://api.openai.com/v1`         | 目标模型的 API 地址。对于 OpenAI 兼容的本地服务（如 Ollama）非常有用。    |
 | `api_key`       | string |  `sk-your-key-here`                              | 目标模型的 API 密钥。(*使用 `openai` 适配器时必须提供*)                 |
 | `model_id`      | string |  `gpt-4o`                                  | 要评测的目标模型 ID，例如 `gpt-4o`, `llama3`。                          |
-| `eval_api_base` | string |  `https://api.aigcbest.top/v1`      | 裁判模型的 API 地址。                                                   |
-| `eval_api_key`  | string |  `sk-your-key-here`                  | 裁判模型的 API 密钥。   |
-| `eval_model_id` | string |  `gpt-4o`             | 用于“LLM作为裁判”的裁判模型 ID。                                        |
+| `judger_api_base` | string |  `https://api.aigcbest.top/v1`      | 裁判模型的 API 地址。                                                   |
+| `judger_api_key`  | string |  `sk-your-key-here`                  | 裁判模型的 API 密钥。   |
+| `judger_model_id` | string |  `gpt-4o`             | 用于“LLM作为裁判”的裁判模型 ID。                                        |
 | `task` | int | 0 | 若不为 0，则只执行特定任务 id|
 
 ---
@@ -91,7 +91,7 @@ python main.py \
     --adapter_type openai \
     --model_id gpt-4o \
     --api_key $OPENAI_API_KEY
-    --eval_api-key $OPENAI_API_KEY
+    --judger_api-key $OPENAI_API_KEY
 ```
 
 #### 示例 2: 评测本地运行的 Ollama Llama3 模型
