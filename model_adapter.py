@@ -86,7 +86,7 @@ class OllamaAdapter(BaseModelAdapter):
                 self.api_endpoint,
                 headers={"Content-Type": "application/json"},
                 data=json.dumps(payload),
-                timeout=60 # 设置60秒超时，防止长时间无响应
+                timeout=100 # 设置100秒超时，超过100秒还无法返回完整响应，视为此模型在实际应用中不可用
             )
             # 如果API返回错误状态码（如 404, 500），则会抛出异常
             response.raise_for_status()

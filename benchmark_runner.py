@@ -67,13 +67,21 @@ class BenchmarkRunner:
                 end_time = time.time()
                 self.benchmark_logger.info("### 模型响应\n")
                 
-                execution_time = round(end_time - start_time, 2)
-                self.benchmark_logger.info(f"模型输出耗时：{execution_time}s\n\n")
-                self.benchmark_logger.info(f"模型输出：\n")
-                self.benchmark_logger.info("```markdown\n" + response + "\n```\n")
-                
-                # print(f"Model Response (took {execution_time}s): \n---\n{response}\n---\n")
-                score, reason = task.evaluate(response, self.judger)
+                if "Error calling" in response and "timeout" in response:
+                    self.benchmark_logger.info(f"模型超时！\n{response}\n\n")
+
+                    # 直接评为 0 分，因为无法在规定时间内生成完整响应
+                    score = 0
+                    reason = "无法在规定时间内生成完整响应"
+
+                else:
+                    execution_time = round(end_time - start_time, 2)
+                    self.benchmark_logger.info(f"模型输出耗时：{execution_time}s\n\n")
+                    self.benchmark_logger.info(f"模型输出：\n")
+                    self.benchmark_logger.info("```markdown\n" + response + "\n```\n")
+                    
+                    # print(f"Model Response (took {execution_time}s): \n---\n{response}\n---\n")
+                    score, reason = task.evaluate(response, self.judger)
                 self.benchmark_logger.info("### 评价结果\n")
                 self.benchmark_logger.info(f"📊回答评分: **{score}**\n")
                 self.benchmark_logger.info(f"评分理由: {reason}\n")
