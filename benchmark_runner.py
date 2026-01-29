@@ -25,6 +25,7 @@ class BenchmarkRunner:
         
         
         total_start_time = time.time()
+        self.total_execution_time = 0.0
 
         if self.task_index != 0:
             # 如果指定了特定任务，则只运行该任务
@@ -85,10 +86,11 @@ class BenchmarkRunner:
                     "score": score,
                     "reason": reason,
                 })
+                self.total_execution_time += execution_time
             
         total_end_time = time.time()
-        self.total_execution_time = round(total_end_time - total_start_time, 2)
-        print(f"✅ Benchmark finished in {self.total_execution_time}s.")
+        self.total_benchmark_time = round(total_end_time - total_start_time, 2)
+        print(f"✅ Benchmark finished in {self.total_benchmark_time}s.")
         return self.get_summary()
 
     def get_summary(self):
@@ -96,7 +98,7 @@ class BenchmarkRunner:
         average_score = round(total_score / len(self.tasks), 2) if self.tasks else 0
         self.benchmark_logger.info("## 最终结果\n")
         self.benchmark_logger.info(f"测评模型: {self.model_adapter.model_id}\n")
-        self.benchmark_logger.info(f"测评耗时: {self.total_execution_time}s\n")
+        self.benchmark_logger.info(f"测评耗时: {self.total_benchmark_time}s\n")
         self.benchmark_logger.info(f"📊 平均分: {average_score}")
 
         summary = {
