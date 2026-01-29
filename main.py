@@ -6,9 +6,9 @@ import datetime
 
 from benchmark_runner import BenchmarkRunner
 from model_adapter import OpenAIAdapter,OllamaAdapter
-from tasks import ALL_TASKS # 从 tasks 包中导入所有任务
 from evaluate import OpenAIJudger, OllamaJudger
 from logger import setup_markdown_logger
+from tasks_handler import load_all_tasks
 
 def main():
     parser = argparse.ArgumentParser(description="Personal LLM Benchmark Framework")
@@ -71,9 +71,11 @@ def main():
     else:
         raise ValueError(f"Unknown judger adapter type: {args.judger_adapter_type}")
 
+    all_tasks = load_all_tasks("tasks")
+
     # 初始化 Benchmark Runner
-    # 它会自动加载我们定义在 tasks/__init__.py 中的所有任务
-    runner = BenchmarkRunner(model_adapter, ALL_TASKS, judger_model_adapter, args.task, benchmark_logger)
+
+    runner = BenchmarkRunner(model_adapter, all_tasks, judger_model_adapter, args.task, benchmark_logger)
 
     # 运行并获取结果
     final_report = runner.run()

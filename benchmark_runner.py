@@ -4,7 +4,6 @@ from tqdm import tqdm
 import logging
 
 from model_adapter import BaseModelAdapter
-from tasks.task_0_base_task import BenchmarkTask
 from evaluate import OpenAIJudger
 from typing import List
 from evaluate import OpenAIJudger
@@ -12,7 +11,7 @@ from evaluate import OpenAIJudger
 # logging.basicConfig(level=logging.DEBUG)
 
 class BenchmarkRunner:
-    def __init__(self, model_adapter: BaseModelAdapter, tasks: List[BenchmarkTask], judger: OpenAIJudger, task_index: int = 0, benchmark_logger: logging.Logger = None):
+    def __init__(self, model_adapter: BaseModelAdapter, tasks: List, judger: OpenAIJudger, task_index: int = 0, benchmark_logger: logging.Logger = None):
         self.model_adapter = model_adapter
         self.tasks = tasks
         self.results = []
@@ -109,10 +108,10 @@ class BenchmarkRunner:
         self.benchmark_logger.info(f"测评耗时: {self.total_benchmark_time}s\n")
         self.benchmark_logger.info(f"📊 平均分: {average_score}")
         self.benchmark_logger.info(f"|模型名|谁是诺亚|记账分类|频谱划分|木棍过门|平均分|耗时(s)|\n|-|-|-|-|-|-|-|-|\n|{self.model_adapter.model_id}|")
+        score_row = ""
         for i, task in enumerate(self.results):
-            self.benchmark_logger.info(f"{task['score']}|")
-        self.benchmark_logger.info(f"{average_score}|")
-        self.benchmark_logger.info(f"{self.total_execution_time}|\n")
+            score_row = score_row + f"{task['score']}|"
+        self.benchmark_logger.info(score_row + f"{average_score}|" + "{self.total_execution_time}|\n")
 
         summary = {
             "model_id": self.model_adapter.model_id,
