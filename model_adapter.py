@@ -135,7 +135,7 @@ class OllamaAdapter(BaseModelAdapter):
             # 如果没有 <think> 标签，可能是纯文本结果或者格式不同
             # 尝试直接将整个内容作为分类结果（或者根据实际情况调整）
             lines = processed_str.splitlines()
-            category = lines[-1].strip() if lines else ""
+            answer = lines[-1].strip() if lines else ""
             return {
                 "thinking": "", # 或者可以返回原始字符串作为思考，取决于预期
                 "answer": answer
