@@ -5,14 +5,14 @@ import logging
 
 from model_adapter import BaseModelAdapter
 from tasks.task_0_base_task import BenchmarkTask
-from evaluate import LLMJudger
+from evaluate import OpenAIJudger
 from typing import List
-from evaluate import LLMJudger
+from evaluate import OpenAIJudger
 
 # logging.basicConfig(level=logging.DEBUG)
 
 class BenchmarkRunner:
-    def __init__(self, model_adapter: BaseModelAdapter, tasks: List[BenchmarkTask], judger: LLMJudger, task_index: int = 0, benchmark_logger: logging.Logger = None):
+    def __init__(self, model_adapter: BaseModelAdapter, tasks: List[BenchmarkTask], judger: OpenAIJudger, task_index: int = 0, benchmark_logger: logging.Logger = None):
         self.model_adapter = model_adapter
         self.tasks = tasks
         self.results = []

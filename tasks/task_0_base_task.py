@@ -1,6 +1,6 @@
 # tasks/base_task.py
 from abc import ABC, abstractmethod
-from evaluate import LLMJudger
+from evaluate import OpenAIJudger
 
 class BenchmarkTask(ABC):
     """
@@ -23,7 +23,7 @@ class BenchmarkTask(ABC):
         pass
 
     @abstractmethod
-    def evaluate(self, response: str, judger: LLMJudger) -> tuple[float, str]:
+    def evaluate(self, response: str, judger: OpenAIJudger) -> tuple[float, str]:
         """
         评估模型的返回结果。
         :param response: 模型的输出字符串。

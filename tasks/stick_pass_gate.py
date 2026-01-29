@@ -1,7 +1,7 @@
 # tasks/chinese_idiom.py
 import os
 from .task_0_base_task import BenchmarkTask
-from evaluate import LLMJudger
+from evaluate import OpenAIJudger
 
 _CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 _ASSETS_DIR = os.path.join(_CURRENT_DIR, '..', 'prompt_assets') # 指向项目根目录下的 prompt_assets
@@ -21,7 +21,7 @@ class StickPassThroughTheGate(BenchmarkTask):
         回答时请直接给出「可以」或「不可以」，同时用简单的语言描述为什么可以或不可以，不要涉及复杂的数学公式或计算。"""
         return prompt
 
-    def evaluate(self, response: str, judger: LLMJudger) -> tuple[float, str]:
+    def evaluate(self, response: str, judger: OpenAIJudger) -> tuple[float, str]:
         response = response.lower()
 
         evaluation_standard = f"""你是一个回答评分器，需要根据给定的标准对 AI 的回答进行评分。我给 AI 的问题是：有一根长度为 5.5 米的细木棍，能否通过高 4 米，宽 3 米的门洞？

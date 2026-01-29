@@ -1,7 +1,7 @@
 # tasks/chinese_idiom.py
 import os
 from .task_0_base_task import BenchmarkTask
-from evaluate import LLMJudger
+from evaluate import OpenAIJudger
 
 # 获取当前文件所在目录的绝对路径
 # 这能确保无论从哪里运行脚本，都能找到 'prompt_assets' 目录
@@ -44,7 +44,7 @@ class SpiritInTheBottle(BenchmarkTask):
             """
         return prompt
 
-    def evaluate(self, response: str, judger: LLMJudger) -> tuple[float, str]:
+    def evaluate(self, response: str, judger: OpenAIJudger) -> tuple[float, str]:
         response = response.lower()
 
         evaluation_standard = f"""
