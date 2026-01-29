@@ -108,6 +108,11 @@ class BenchmarkRunner:
         self.benchmark_logger.info(f"测评模型: {self.model_adapter.model_id}\n")
         self.benchmark_logger.info(f"测评耗时: {self.total_benchmark_time}s\n")
         self.benchmark_logger.info(f"📊 平均分: {average_score}")
+        self.benchmark_logger.info(f"|模型名|谁是诺亚|记账分类|频谱划分|木棍过门|平均分|耗时(s)|\n|-|-|-|-|-|-|-|-|\n|{self.model_adapter.model_id}|")
+        for i, task in enumerate(self.results):
+            self.benchmark_logger.info(f"{task['score']}|")
+        self.benchmark_logger.info(f"{average_score}|")
+        self.benchmark_logger.info(f"{self.total_execution_time}|\n")
 
         summary = {
             "model_id": self.model_adapter.model_id,
