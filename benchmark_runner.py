@@ -102,21 +102,37 @@ class BenchmarkRunner:
 
     def get_summary(self):
         total_score = sum(res["score"] for res in self.results)
-        average_score = round(total_score / len(self.tasks), 2) if self.tasks else 0
-        self.benchmark_logger.info("## 最终结果\n")
+        count = len(self.tasks)
+        average_score = round(total_score / count, 2) if count > 0 else 0
+        
+        # 1. 动态生成表头 (Headers) 
+        # 取出所有任务的名称作为列名
+        task_names = [task.get_name() for task in self.tasks]
+        header_row = "| 模型名 | " + " | ".join(task_names) + " | 平均分 | 耗时(s) |"
+        
+        # 2. 动态生成分割线 (Separator)
+        # 根据列数生成 |-|-|-|
+        separator_row = "|---" * (len(task_names) + 3) + "|" # +3 是因为有 模型名、平均分、耗时
+        
+        # 3. 动态生成分数行 (Score Row)
+        # 按照任务顺序排列分数（重点：通过 task_id 或 index 匹配确保对应）
+        # 假设 self.results 是按 self.tasks 顺序生成的
+        scores = [str(res["score"]) for res in self.results]
+        data_row = f"| {self.model_adapter.model_id} | " + " | ".join(scores) + f" | {average_score} | {self.total_execution_time} |"
+        
+        # 4. 打印日志
+        self.benchmark_logger.info("## 最终评价摘要\n")
         self.benchmark_logger.info(f"测评模型: {self.model_adapter.model_id}\n")
         self.benchmark_logger.info(f"测评耗时: {self.total_benchmark_time}s\n")
-        self.benchmark_logger.info(f"📊 平均分: {average_score}")
-        self.benchmark_logger.info(f"|模型名|谁是诺亚|记账分类|频谱划分|木棍过门|平均分|耗时(s)|\n|-|-|-|-|-|-|-|-|\n|{self.model_adapter.model_id}|")
-        score_row = ""
-        for i, task in enumerate(self.results):
-            score_row = score_row + f"{task['score']}|"
-        self.benchmark_logger.info(score_row + f"{average_score}|" + "{self.total_execution_time}|\n")
+        self.benchmark_logger.info(f"📊 平均分: {average_score}\n")
+        
+        # 组装完整的 Markdown 表格
+        self.benchmark_logger.info(f"{header_row}\n{separator_row}\n{data_row}\n")
 
         summary = {
             "model_id": self.model_adapter.model_id,
-            "total_tasks": len(self.tasks),
+            "total_tasks": count,
             "average_score": average_score,
-            # "detailed_results": self.results
+            "results": self.results
         }
         return summary
