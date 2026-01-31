@@ -40,12 +40,60 @@
 
 
 
-## ✨ 特性
+## ✨ 任务分类
 
--   **高度模块化**: 评测任务和模型适配器完全分离，添加新的测试单元或接入新的模型服务变得异常简单。
--   **灵活的模型接入**: 内置对 OpenAI GPT 系列和本地 Ollama 服务的适配器，可轻松扩展到任何其他 API。
--   **可量化的评估**: 支持多种评估方式，包括基于关键词的评分、基于代码执行结果的评分，以及结构化输出的验证。
--   **清晰的报告**: 在测试结束后生成详细的报告，包含每个任务的得分、耗时、模型输出和评分理由。
+### 1. 语言基础能力 (Language Proficiency)
+这类维度测试模型对语言本身的理解和生成质量。
+
+- language_understanding (语言理解)：语法、语义纠错、词义辨析。
+- summarization (摘要提取)：长文本缩写、要点提取。
+- translation (翻译)：多语言互译、文言文/白话文转换。
+- rewriting (改写/润色)：风格转换、语气调整。
+
+### 2. 逻辑与推理 (Reasoning)
+
+区分模型“聪明程度”的关键指标。
+
+- logical_reasoning (逻辑推理)：包含演绎推理、归纳推理、悖论分析。
+- mathematical_reasoning (数学推理)：从小算术到复杂的奥数题、微积分。
+- common_sense (常识推理)：测试模型是否具备人类社会的基本常识。
+- causal_reasoning (因果推理)：分析“如果...那么...”的因果关系。
+
+### 3. 代码与技术能力 (Coding & Technical)
+
+- code_generation (代码生成)：根据需求写函数或完整项目。
+- code_debugging (代码纠错)：找 Bug 并修复。
+- sql_and_data (数据库/数据处理)：编写 SQL 语句或进行 Excel/JSON 处理。
+- technical_writing (技术文档)：编写 API 说明、README 或架构文档。
+
+
+### 4. 专业知识 (Subject Knowledge)
+
+测试模型在特定学科的深度。
+
+- humanities_social_science (人文社科)：历史、哲学、法律、政治。
+- stem (理工科)：物理、化学、生物、工程。
+- medicine_and_health (医疗健康)：医学常识、处方建议（通常需加免责声明）。
+- business_and_finance (商业金融)：市场分析、财务报表解读。
+
+### 5. 创意与生成 (Creativity & Brainstorming)
+
+- creative_writing (创意写作)：小说、诗歌、剧本。
+- roleplay (角色扮演)：模拟特定人物、职业或人格。
+- brainstorming (头脑风暴)：提供点子、活动策划、起名。
+
+### 6. 指令遵循与任务 (Instruction Following)
+
+- strict_instruction_following (严格指令遵循)：例如“不准输出标点符号”、“字数必须在50-60字之间”。
+- multi_turn_conversation (多轮对话能力)：测试模型对上下文关联的记忆和处理。
+- tool_use (工具调用/Agent)：测试模型能否按格式调用外部 API 或函数。
+
+### 7. 安全性与对齐 (Safety & Alignment) 
+
+- hallucination (幻觉测试)：看模型是否一本正经地胡说八道。
+- toxicity_and_bias (毒性与偏见)：测试是否存在歧视、暴力内容。
+- jailbreak_defense (防御攻击)：测试模型是否会被“催眠”或诱导绕过安全限制。
+- fact_checking (事实核查)：考察模型对时事或硬核事实的准确性。
 
 ## 🚀 快速开始
 

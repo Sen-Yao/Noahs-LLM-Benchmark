@@ -3,6 +3,9 @@ import time
 from tqdm import tqdm
 import logging
 
+from collections import defaultdict
+from typing import List
+
 from model_adapter import BaseModelAdapter
 from evaluate import OpenAIJudger
 from typing import List
@@ -22,7 +25,6 @@ class BenchmarkRunner:
     def run(self):
         print(f"\n\n🚀 Starting benchmark for model: {self.model_adapter.model_id}")
         
-        
         total_start_time = time.time()
         self.total_execution_time = 0.0
 
@@ -30,6 +32,7 @@ class BenchmarkRunner:
             # 如果指定了特定任务，则只运行该任务
             task = self.tasks[self.task_index - 1]
             print(f"===== Running Task: {task.get_name()} =====")
+            print(f"Category: {task.get_category()}")
             print(f"Description: {task.get_description()}")
             prompt = task.generate_prompt()
             start_time = time.time()
@@ -46,17 +49,15 @@ class BenchmarkRunner:
             
             self.results.append({
                 "task_name": task.get_name(),
+                "category": task.get_category(),  # ✅ 新增分类
                 "execution_time": execution_time,
-                # "prompt": prompt,
-                # "response": response,
                 "score": score,
                 "reason": reason,
             })
         else:
             for i, task in tqdm(enumerate(self.tasks), total=len(self.tasks), desc="Running tasks"):
-                # print(f"===== Running Task {i+1}/{len(self.tasks)}: {task.get_name()} =====")
-                # print(f"Description: {task.get_description()}")
                 self.benchmark_logger.info(f"## Task {i+1}: {task.get_name()} ")
+                self.benchmark_logger.info(f"**分类**: {task.get_category()}\n")  # ✅ 记录分类
                 self.benchmark_logger.info("### 提示词\n")
                 prompt = task.generate_prompt()
                 self.benchmark_logger.info("```markdown\n" + prompt + "\n```")
@@ -66,30 +67,28 @@ class BenchmarkRunner:
                 end_time = time.time()
                 self.benchmark_logger.info("### 模型响应\n")
                 
+                execution_time = 0.0  # 初始化，防止超时时未定义
+                
                 if "Error calling" in response and "timeout" in response:
                     self.benchmark_logger.info(f"模型超时！\n{response}\n\n")
-
-                    # 直接评为 0 分，因为无法在规定时间内生成完整响应
                     score = 0
                     reason = "无法在规定时间内生成完整响应"
-
                 else:
                     execution_time = round(end_time - start_time, 2)
                     self.benchmark_logger.info(f"模型输出耗时：{execution_time}s\n\n")
                     self.benchmark_logger.info(f"模型输出：\n")
                     self.benchmark_logger.info("```markdown\n" + response + "\n```\n")
                     
-                    # print(f"Model Response (took {execution_time}s): \n---\n{response}\n---\n")
                     score, reason = task.evaluate(response, self.judger)
+                
                 self.benchmark_logger.info("### 评价结果\n")
                 self.benchmark_logger.info(f"📊回答评分: **{score}**\n")
                 self.benchmark_logger.info(f"评分理由: {reason}\n")
                 
                 self.results.append({
                     "task_name": task.get_name(),
+                    "category": task.get_category(),  # ✅ 新增分类
                     "execution_time": execution_time,
-                    # "prompt": prompt,
-                    # "response": response,
                     "score": score,
                     "reason": reason,
                 })
@@ -101,38 +100,70 @@ class BenchmarkRunner:
         return self.get_summary()
 
     def get_summary(self):
+        """
+        按类别汇总统计，输出每个类别的平均分。
+        """
+        # ============ 1. 按类别分组统计 ============
+        category_scores = defaultdict(list)
+        for res in self.results:
+            category_scores[res["category"]].append(res["score"])
+        
+        # 计算每个类别的平均分
+        category_avg = {}
+        for category, scores in category_scores.items():
+            avg = round(sum(scores) / len(scores), 2) if scores else 0
+            category_avg[category] = {
+                "average": avg,
+                "count": len(scores),
+                "total": round(sum(scores), 2)
+            }
+        
+        # 按类别名排序，保证输出顺序一致
+        sorted_categories = sorted(category_avg.keys())
+        
+        # ============ 2. 计算总平均分 ============
         total_score = sum(res["score"] for res in self.results)
-        count = len(self.tasks)
-        average_score = round(total_score / count, 2) if count > 0 else 0
+        total_count = len(self.results)
+        overall_average = round(total_score / total_count, 2) if total_count > 0 else 0
         
-        # 1. 动态生成表头 (Headers) 
-        # 取出所有任务的名称作为列名
-        task_names = [task.get_name() for task in self.tasks]
-        header_row = "| 模型名 | " + " | ".join(task_names) + " | 平均分 | 耗时(s) |"
+        # ============ 3. 生成 Markdown 表格（按类别） ============
+        # 表头：| 模型名 | 类别1 | 类别2 | ... | 总平均分 | 耗时(s) |
+        header_row = "| 模型名 | " + " | ".join(sorted_categories) + " | 总平均分 | 耗时(s) |"
         
-        # 2. 动态生成分割线 (Separator)
-        # 根据列数生成 |-|-|-|
-        separator_row = "|---" * (len(task_names) + 3) + "|" # +3 是因为有 模型名、平均分、耗时
+        # 分割线
+        separator_row = "|---" * (len(sorted_categories) + 3) + "|"
         
-        # 3. 动态生成分数行 (Score Row)
-        # 按照任务顺序排列分数（重点：通过 task_id 或 index 匹配确保对应）
-        # 假设 self.results 是按 self.tasks 顺序生成的
-        scores = [str(res["score"]) for res in self.results]
-        data_row = f"| {self.model_adapter.model_id} | " + " | ".join(scores) + f" | {average_score} | {self.total_execution_time} |"
+        # 数据行：各类别平均分
+        category_scores_str = [str(category_avg[cat]["average"]) for cat in sorted_categories]
+        data_row = f"| {self.model_adapter.model_id} | " + " | ".join(category_scores_str) + f" | {overall_average} | {self.total_execution_time} |"
         
-        # 4. 打印日志
+        # ============ 4. 打印详细日志 ============
         self.benchmark_logger.info("## 最终评价摘要\n")
         self.benchmark_logger.info(f"测评模型: {self.model_adapter.model_id}\n")
         self.benchmark_logger.info(f"测评耗时: {self.total_benchmark_time}s\n")
-        self.benchmark_logger.info(f"📊 平均分: {average_score}\n")
+        self.benchmark_logger.info(f"📊 总平均分: {overall_average}\n\n")
         
-        # 组装完整的 Markdown 表格
+        # 打印各类别详情
+        self.benchmark_logger.info("### 各类别得分详情\n")
+        self.benchmark_logger.info("| 类别 | 任务数 | 类别总分 | 类别平均分 |")
+        self.benchmark_logger.info("|---|---|---|---|")
+        for cat in sorted_categories:
+            info = category_avg[cat]
+            self.benchmark_logger.info(f"| {cat} | {info['count']} | {info['total']} | {info['average']} |")
+        self.benchmark_logger.info("\n")
+        
+        # 打印汇总表格
+        self.benchmark_logger.info("### 汇总表格\n")
         self.benchmark_logger.info(f"{header_row}\n{separator_row}\n{data_row}\n")
 
+        # ============ 5. 返回结构化 Summary ============
         summary = {
             "model_id": self.model_adapter.model_id,
-            "total_tasks": count,
-            "average_score": average_score,
-            "results": self.results
+            "total_tasks": total_count,
+            "overall_average": overall_average,
+            "total_execution_time": self.total_execution_time,
+            "total_benchmark_time": self.total_benchmark_time,
+            "category_summary": category_avg,  # ✅ 各类别统计
+            "results": self.results  # 保留原始结果，方便后续分析
         }
         return summary

@@ -1,6 +1,7 @@
 import yaml
 import os
 import re
+from pathlib import Path
 
 # tasks/base_task.py
 from abc import ABC, abstractmethod
@@ -36,15 +37,21 @@ class BenchmarkTask(ABC):
         pass
 
 class ConfigurableTask(BenchmarkTask):
-    def __init__(self, config_path: str):
+    def __init__(self, config_path: str, category: str = "unclassified"):
         with open(config_path, 'r', encoding='utf-8') as f:
             self.config = yaml.safe_load(f)
+            self.category = category
+            self.config_path = config_path
         
     def get_name(self) -> str:
         return self.config.get('name', '未命名任务')
 
     def get_description(self) -> str:
         return self.config.get('description', '无描述')
+    
+    def get_category(self) -> str:
+        """获取任务分类"""
+        return self.category
     
     def generate_prompt(self) -> str:
         # 自动填充模板中的变量（如 {article}）
@@ -111,14 +118,43 @@ class ConfigurableTask(BenchmarkTask):
         except Exception as e:
             return 0.0, f"Judger 评分过程出错: {str(e)}"
 
-def load_all_tasks(config_dir: str):
+def load_all_tasks(config_dir: str) -> list[ConfigurableTask]:
+    """
+    递归加载目录下所有 YAML 任务配置。
+    子文件夹名将作为任务的分类（category）。
+    
+    目录结构示例：
+    config_dir/
+    ├── reasoning/
+    │   ├── task1.yaml
+    │   └── task2.yaml
+    ├── language_proficiency/
+    │   └── task3.yaml
+    └── root_task.yaml  # 根目录的任务，分类为 "unclassified"
+    """
     tasks = []
-    # 扫描目录下所有的 .yaml 文件
-    for filename in os.listdir(config_dir):
-        if filename.endswith('.yaml') or filename.endswith('.yml'):
-            file_path = os.path.join(config_dir, filename)
-            with open(file_path, 'r', encoding='utf-8') as f:
-                # 实例化统一的任务类
-                task_instance = ConfigurableTask(file_path)
-                tasks.append(task_instance)
+    config_path = Path(config_dir)
+    
+    # 使用 rglob 递归查找所有 .yaml 文件
+    for file_path in config_path.rglob('*.yaml'):
+        category = _extract_category(file_path, config_path)
+        task_instance = ConfigurableTask(str(file_path), category=category)
+        tasks.append(task_instance)
+    
     return tasks
+
+def _extract_category(file_path: Path, base_path: Path) -> str:
+    """
+    从文件路径中提取分类名。
+    取相对于 base_path 的第一级子目录名作为分类。
+    """
+    try:
+        relative = file_path.relative_to(base_path)
+        parts = relative.parts
+        
+        if len(parts) > 1:
+            return parts[0]  # 返回第一级文件夹名作为分类
+        else:
+            return "unclassified"  # 根目录下的文件
+    except ValueError:
+        return "unclassified"
