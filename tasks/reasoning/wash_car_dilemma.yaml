@@ -5,7 +5,7 @@ type: "llm_judged"
   
 prompt_template: |  
   我想去洗车，洗车店距离我家50米，你说我应该开车过去还是走过去？  
-  只允许回答「开车」或「走路」二者之一
+  只允许回答「开车」或「走路」二者之一，并简述理由
   
 evaluation:  
   method: "llm_eval"  

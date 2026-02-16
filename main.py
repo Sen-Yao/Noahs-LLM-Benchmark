@@ -30,7 +30,7 @@ def main():
     benchmark_logger.info(f"- 测评模型: {args.model_id}\n")
     benchmark_logger.info(f"- 评价模型: {args.judger_model_id}\n")
     benchmark_logger.info(f"- 运行时间: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-    benchmark_logger.info(f"- 题库版本: 20250813\n")
+    benchmark_logger.info(f"- 题库版本: 20260216\n")
 
     if args.adapter_type == "openai" and args.api_key == "sk-your-key-here":
         # 如果被测模型为外部模型，且没有提供 API Key，则提示错误
