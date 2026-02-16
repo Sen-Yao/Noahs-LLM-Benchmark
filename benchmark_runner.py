@@ -87,7 +87,6 @@ class BenchmarkRunner:
                 
                 self.results.append({
                     "task_name": task.get_name(),
-                    "category": task.get_category(),  # ✅ 新增分类
                     "execution_time": execution_time,
                     "score": score,
                     "reason": reason,
@@ -164,6 +163,5 @@ class BenchmarkRunner:
             "total_execution_time": self.total_execution_time,
             "total_benchmark_time": self.total_benchmark_time,
             "category_summary": category_avg,  # ✅ 各类别统计
-            "results": self.results  # 保留原始结果，方便后续分析
         }
         return summary
