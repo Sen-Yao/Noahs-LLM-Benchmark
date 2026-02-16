@@ -87,6 +87,7 @@ class BenchmarkRunner:
                 
                 self.results.append({
                     "task_name": task.get_name(),
+                    "category": task.get_category(),
                     "execution_time": execution_time,
                     "score": score,
                     "reason": reason,
