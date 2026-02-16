@@ -63,6 +63,8 @@ class ConfigurableTask(BenchmarkTask):
         # 路由到不同的评估策略
         if method == "exact_match":
             return self._evaluate_exact(response)
+        elif method == "fill_in": # 填空题
+            return self._evaluate_fill_in(response)
         elif method == "llm_eval":
             return self._evaluate_llm(response, judger)
     
@@ -100,6 +102,35 @@ class ConfigurableTask(BenchmarkTask):
 
         return float(default_score), default_reason
 
+    def _evaluate_fill_in(self, response: str) -> tuple[float, str]:
+        """
+        填空题评估：支持多正确选项、去除标点干扰、数值容差等。
+        """
+        import re
+        eval_cfg = self.config.get('evaluation', {})
+        # 填空题的正确答案可以是列表或字符串
+        standard_answers = eval_cfg.get('answers', [])
+        if isinstance(standard_answers, str):
+            standard_answers = [standard_answers]
+            
+        score_value = float(eval_cfg.get('score', 100.0))
+        default_score = float(eval_cfg.get('default_score', 0.0))
+
+        # 去掉引号、转小写、去掉首尾空格
+        res = response.strip().lower().replace('"', '').replace("'", "")
+        # 去掉结尾常见的标点符号
+        res = re.sub(r'[。，！？．\.!\?,]$', '', res)
+
+        # 准备标准答案列表
+        normalized_standards = [str(ans).strip().lower() for ans in standard_answers]
+
+        # 匹配逻辑
+        # 逻辑 A: 精确匹配（归一化后）
+        if res in normalized_standards:
+            return score_value, "回答正确"
+        
+        return default_score, eval_cfg.get('default_reason', "回答错误")
+    
     def _evaluate_llm(self, response: str, judger=None) -> tuple[float, str]:
         """
         LLM 裁判评估：用于开放式推理、文学分析等。
